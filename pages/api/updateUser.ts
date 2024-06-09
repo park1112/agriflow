@@ -1,16 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { adminDb } from '@/lib/firebaseAdmin';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { id, name, email, role } = req.body;
+    const { id, name } = req.body;
+
     try {
-      await adminDb.collection('users').doc(id).update({ name, email, role });
+      const userRef = adminDb.collection('users').doc(id);
+      await userRef.update({ name });
       res.status(200).json({ message: 'User updated successfully' });
     } catch (error) {
-      res.status(500).json({ error: 'Error updating user' });
+      console.error('Error updating user:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
   } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', ['POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
+
+export default updateUser;
