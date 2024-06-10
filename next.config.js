@@ -1,3 +1,10 @@
+const fs = require('fs');
+const path = require('path');
+
+const serviceAccount = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, 'serviceAccountKey.json'), 'utf-8')
+);
+
 module.exports = {
   reactStrictMode: true,
   swcMinify: true,
@@ -22,5 +29,8 @@ module.exports = {
       use: ['style-loader', 'css-loader', 'postcss-loader'],
     });
     return config;
+  },
+  env: {
+    FIREBASE_SERVICE_ACCOUNT: JSON.stringify(serviceAccount),
   },
 };
